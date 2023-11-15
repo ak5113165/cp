@@ -19,8 +19,6 @@ int main()
   cin >> t;
   while (t--)
   {
-   int n,x;
-   cin>>n>>x;
-   cout<<pow(2,-2);
+    
   }
 }

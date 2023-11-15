@@ -1,60 +1,51 @@
-#include <bits/stdc++.h>
+#include<bits/stdc++.h>
 using namespace std;
-long long mod = 1e9 + 7;
-long long N=40004;
-long long M=501;
-// long long dp[M][N];
-bool ispal(string s)
-{
+
+int maxReward(vector<vector<int>>& events, int K) {
+    // Sort the events by their start times
+    sort(events.begin(), events.end());
     
+    // Initialize a max heap (priority queue) to keep track of the events with the highest points
+    priority_queue<int> maxHeap;
+    
+    int totalReward = 0;
     int i = 0;
-    int j = s.size() - 1;
-    while (i < j)
-    {
-        if (s[i] != s[j])
-        {
-            return false;
+    
+    for (int day = 1; day <= 100000; ++day) {
+        // Add all events that start on this day to the max heap
+        while (i < events.size() && events[i][0] == day) {
+            maxHeap.push(events[i][2]);
+            i++;
         }
-        i++;
-        j--;
+        
+        // Remove the event with the lowest points if we exceed K events
+        while (maxHeap.size() > K) {
+            maxHeap.pop();
+        }
+        
+        // Calculate the total reward by summing up the points of the top K events in the max heap
+        int currentReward = 0;
+        for (int j = 0; j < maxHeap.size(); ++j) {
+            currentReward += maxHeap.top();
+            maxHeap.pop();
+        }
+        
+        totalReward += currentReward;
+        
+        // Restore the max heap for the next day
+        for (int j = 0; j < maxHeap.size(); ++j) {
+            maxHeap.push(currentReward);
+        }
     }
-    return true;
+    
+    return totalReward;
 }
-int main()
-{  
-    vector<int>coin;
-    coin.push_back(0);
-    for(int i=1;i<=40004;i++)
-    {
-        if(ispal(to_string(i)))
-        {
-            coin.push_back(i);
-        }
-    }
-    int n;
-    cin>>n;
-    vector<vector<int>>dp(500,vector<int>(40004,0));
-    for(int i=0;i<=500;i++)
-    {
-        dp[i][0]=1;
-    }
-    for(int i=0;i<=40004;i++)
-    {
-        dp[0][i]=1;
-    }
-    for(int i=0;i<=500;i++)
-    {
-        for(int j=0;j<=40004;j++)
-        {
-            if(coin[i]<=j)
-            {
-                dp[i][j]=dp[i-1][j]+dp[i][j-coin[i]];
-            }
-            else
-            {
-                dp[i][j]=dp[i-1][j];
-            }
-        }
-    }
-    cout<<dp[500][n];
+
+int main() {
+    vector<vector<int>> events = {{1, 3, 5}, {2, 4, 7}, {3, 5, 2}, {6, 7, 8}};
+    int K = 2;
+    int result = maxReward(events, K);
+    cout << result << endl;  // Output: 12
+    
+    return 0;
 }
